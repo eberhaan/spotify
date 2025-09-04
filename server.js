@@ -9,7 +9,7 @@ const app = express();
 // Ersetze die URL mit deiner LimeSurvey-Domain
 app.use(cors({
     origin: [
-        "https://deine-limesurvey-domain.de", // z.B. https://survey.uni.de
+        "https://umfrage.umit-tirol.at/index.php/845248?lang=de", // z.B. https://survey.uni.de
         "https://*.limesurvey.org"            // optional für alle LimeSurvey-Instanzen
     ],
     methods: ["GET"]
