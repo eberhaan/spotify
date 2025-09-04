@@ -1,52 +1,16 @@
-const express = require("express");
-const axios = require("axios");
-const cors = require("cors");
-
-const app = express();
-
-// CORS erlauben für LimeSurvey
-app.use(cors({
-    origin: [
-        "https://umfrage.umit-tirol.at/index.php/845248?lang=de", // z. B. https://survey.uni.de
-    ],
-    methods: ["GET"]
-}));
-
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-
-let accessToken = null;
-
-async function getAccessToken() {
-  const response = await axios.post(
-    "https://accounts.spotify.com/api/token",
-    "grant_type=client_credentials",
-    {
-      headers: {
-        Authorization:
-          "Basic " +
-          Buffer.from(CLIENT_ID + ":" + CLIENT_SECRET).toString("base64"),
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
-  accessToken = response.data.access_token;
-}
-
 app.get("/search", async (req, res) => {
-  const q = req.query.q;
+  let q = req.query.q || "";
+  
+  // Kürze Query auf maximal 250 Zeichen
+  if (q.length > 250) q = q.substring(0, 250);
   if (!accessToken) await getAccessToken();
-
   try {
     const response = await axios.get(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-        q
-      )}&type=track&limit=10`,
+      `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=10`,
       {
         headers: { Authorization: "Bearer " + accessToken },
       }
     );
-
     const results = response.data.tracks.items.map((track) => ({
       title: track.name,
       artist: track.artists.map((a) => a.name).join(", "),
@@ -54,13 +18,9 @@ app.get("/search", async (req, res) => {
       id: track.id,
       preview: track.preview_url,
     }));
-
     res.json(results);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: error.message });
   }
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
