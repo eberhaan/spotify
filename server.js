@@ -1,9 +1,10 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
-require("dotenv").config();
 
 const app = express();
+
+// CORS für alle Domains erlauben
 app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -56,4 +57,5 @@ app.get("/search", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server läuft auf Port 3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
