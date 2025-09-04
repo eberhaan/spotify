@@ -1,13 +1,14 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
-app.use(cors());
 
-const app = express();
+const app = express(); // Zuerst app initialisieren
 
 // CORS für alle Domains erlauben
 app.use(cors());
+app.use(express.json()); // Optional, falls JSON-Daten gesendet werden
 
+// Spotify Credentials aus Environment Variables
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
@@ -60,3 +61,4 @@ app.get("/search", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
+
